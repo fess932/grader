@@ -21,7 +21,7 @@ func main() {
 	config := configs.NewServerConfig()
 	queue.NewNatsQueue(config).Run()
 
-	app := exercise.New()
+	exerUcase := exercise.NewExersiceUsecase()
 
-	rest.NewRest(app, config).Serve() // blocking
+	rest.NewRest(exerUcase, config).Serve() // blocking
 }

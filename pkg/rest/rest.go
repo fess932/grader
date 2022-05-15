@@ -5,6 +5,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"grader/configs"
 	"grader/pkg/exercise"
+	"grader/pkg/user"
+	"grader/web"
 	"net/http"
 )
 
@@ -16,8 +18,8 @@ type Rest struct {
 }
 
 type IApp interface {
-	GetExercise(id string) (exercise.Exercise, error)
-	CheckExercise(e exercise.Exercise) error
+	GetExercise(user user.User, id string) (exercise.Exercise, error)
+	CheckExercise(user user.User, e exercise.Exercise) error
 }
 
 func NewRest(app IApp, config configs.ServerConfig) *Rest {
@@ -26,18 +28,24 @@ func NewRest(app IApp, config configs.ServerConfig) *Rest {
 		app:  app,
 	}
 
+	templates, err := web.ParseTemplates()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to parse templates")
+	}
+
 	r := chi.NewRouter()
 	r.Route("/v1/api", func(rapi chi.Router) {
 		r.Post("/exercise/{ID}/upload", rest.handleUploadExercise) // upload file with exercise
 	})
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Hello World"))
+		templates.ExecuteTemplate(w, "index.html", nil)
 	})
 
 	r.Get("/exercise", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("exercises list"))
 	})
+
 	r.Get("/exercise/{ID}", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("exercise"))
 	})
@@ -56,6 +64,13 @@ func (rest *Rest) Serve() {
 }
 
 func (rest *Rest) handleUploadExercise(w http.ResponseWriter, r *http.Request) {
+	usr := user.FromContext(r.Context())
+	if usr == nil {
+		w.WriteHeader(http.StatusUnauthorized)
+
+		return
+	}
+
 	//eID := chi.URLParam(r, "ID")
 	//user
 	//
