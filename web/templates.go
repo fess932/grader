@@ -6,7 +6,7 @@ import (
 	"html/template"
 )
 
-//go:embed *
+//go:embed *.html
 var fs embed.FS
 
 func ParseTemplates() (*template.Template, error) {
