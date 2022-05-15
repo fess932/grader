@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exercise</title>
+    <link rel="stylesheet" href="/assets/main.css">
+</head>
+<body class="p-8 bg-gray-50">
+    <h1 class="text-2xl">Hello %username% !</h1>
+
+    <div>
+        <h2>Задача 1</h2>
+        <h2>описание задачи</h2>
+        <p>Вывести на экран числа от 1 до 100.</p>
+        <h2>Загрзить файлы</h2>
+
+        <form class="p-4" method="post" action="/exercise/1/upload">
+            <label class="p-4 bg-amber-200 cursor-pointer" for="file">Выберите файлы для загрузки</label>
+            <input class="hidden" type="file" id="file" name="file" multiple>
+            <button class="p-4 bg-amber-200">Загрузить</button>
+        </form>
+    </div>
+</body>
+</html>

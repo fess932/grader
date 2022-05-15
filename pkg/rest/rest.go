@@ -7,12 +7,15 @@ import (
 	"grader/pkg/exercise"
 	"grader/pkg/user"
 	"grader/web"
+	"html/template"
+	"io"
 	"net/http"
 )
 
 type Rest struct {
 	addr string
 	*chi.Mux
+	tmpl *template.Template
 
 	app IApp
 }
@@ -23,33 +26,26 @@ type IApp interface {
 }
 
 func NewRest(app IApp, config configs.ServerConfig) *Rest {
+	tmpl, err := web.ParseTemplates()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to parse src")
+	}
+
 	rest := &Rest{
 		addr: config.Host,
 		app:  app,
-	}
-
-	templates, err := web.ParseTemplates()
-	if err != nil {
-		log.Fatal().Err(err).Msg("failed to parse templates")
+		tmpl: tmpl,
 	}
 
 	r := chi.NewRouter()
-	r.Route("/v1/api", func(rapi chi.Router) {
-		r.Post("/exercise/{ID}/upload", rest.handleUploadExercise) // upload file with exercise
-	})
+	r.Route("/v1/api", func(rapi chi.Router) {})
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		templates.ExecuteTemplate(w, "index.html", nil)
-	})
+	r.Get("/", rest.index)
+	r.Get("/exercise", rest.exercisesList)
+	r.Get("/exercise/{ID}", rest.exerciseView)
+	r.Post("/exercise/{ID}/upload", rest.handleUploadExercise)
 
-	r.Get("/exercise", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("exercises list"))
-	})
-
-	r.Get("/exercise/{ID}", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("exercise"))
-	})
-
+	r.Handle("/assets/*", web.StaticFiles(""))
 	rest.Mux = r
 
 	return rest
@@ -63,23 +59,37 @@ func (rest *Rest) Serve() {
 	}
 }
 
-func (rest *Rest) handleUploadExercise(w http.ResponseWriter, r *http.Request) {
+func (rest *Rest) index(w http.ResponseWriter, r *http.Request) {
+	rest.tmpl.ExecuteTemplate(w, "index.html", nil)
+}
+func (rest *Rest) exercisesList(w http.ResponseWriter, r *http.Request) {
+	rest.tmpl.ExecuteTemplate(w, "index.html", nil)
+}
+func (rest *Rest) exerciseView(w http.ResponseWriter, r *http.Request) {
 	usr := user.FromContext(r.Context())
 	if usr == nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		noAuth(w, r)
 
 		return
 	}
 
-	//eID := chi.URLParam(r, "ID")
-	//user
-	//
-	//user from ctx
-	//exerciseID from url param
-	//listFiles
-	//
-	//
-	//rest.app.CheckExercise()
-	//rest.app.
-	//	log.Debug().Msg("Uploading exercise")
+	rest.tmpl.ExecuteTemplate(w, "exercise.html", nil)
+}
+
+func (rest *Rest) handleUploadExercise(w http.ResponseWriter, r *http.Request) {
+	usr := user.FromContext(r.Context())
+	if usr == nil {
+		noAuth(w, r)
+
+		return
+	}
+
+	rest.tmpl.ExecuteTemplate(w, "exercise.html", nil)
+}
+
+func noAuth(w http.ResponseWriter, r *http.Request) {
+	log.Debug().Msg("no auth")
+
+	w.WriteHeader(http.StatusUnauthorized)
+	io.WriteString(w, "вы не авторизованы")
 }

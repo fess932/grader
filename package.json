@@ -1,7 +1,9 @@
 {
-  "dependencies": {
-    "autoprefixer": "^10.4.7",
-    "postcss": "^8.4.13",
+  "scripts": {
+    "build:css": "tailwind -i web/src/main.css -o web/assets/main.css",
+    "watch": "tailwind -i web/src/main.css -o web/assets/main.css --watch"
+  },
+  "devDependencies": {
     "tailwindcss": "^3.0.24"
   }
 }
