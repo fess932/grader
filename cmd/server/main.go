@@ -7,6 +7,7 @@ import (
 	"grader/configs"
 	"grader/pkg/exercise"
 	exerciseDelivery "grader/pkg/exercise/delivery"
+	"grader/pkg/grader/delivery"
 	"grader/pkg/queue"
 	"grader/pkg/rest"
 	"os"
@@ -24,7 +25,12 @@ func main() {
 	log.Debug().Msgf("start nats: %v:%v", config.NatsHost, config.NatsPort)
 	queue.NewNatsQueue(config).Run()
 
-	edelivery, err := exerciseDelivery.NewNatsDelivery(config)
+	client, err := delivery.NewGraderClient(config.GraderAddr)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to connect to grader")
+	}
+
+	edelivery, err := exerciseDelivery.NewNatsDelivery(config, client)
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to create exercise delivery")
 	}

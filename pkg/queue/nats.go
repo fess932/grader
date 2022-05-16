@@ -26,7 +26,6 @@ func NewNatsQueue(config configs.ServerConfig) *NatsQueue {
 }
 
 func (n *NatsQueue) Run() {
-	log.Debug().Msg("Starting queue NATS exercise")
-
+	log.Debug().Msg("Starting queue NATS server")
 	go n.s.Start()
 }

@@ -5,6 +5,8 @@ type ServerConfig struct {
 	NatsPort int
 	Host     string
 
+	GraderAddr string
+
 	QueueWorkers int
 	FilesDir     string
 }
@@ -16,5 +18,6 @@ func NewServerConfig() ServerConfig {
 		Host:         ":8080",
 		FilesDir:     "./files",
 		QueueWorkers: 10,
+		GraderAddr:   "localhost:8081",
 	}
 }

@@ -12,7 +12,11 @@ import (
 
 const timeout = time.Second * 3
 
-func NewNatsDelivery(config configs.ServerConfig) (*NatsDelivery, error) {
+type IGraderClient interface {
+	SendExercise(*exercise.Exercise) error
+}
+
+func NewNatsDelivery(config configs.ServerConfig, client IGraderClient) (*NatsDelivery, error) {
 	host := fmt.Sprintf("nats://%v:%v", config.NatsHost, config.NatsPort)
 	log.Debug().Msg("Connecting to NATS: " + host)
 	time.Sleep(timeout)
@@ -23,12 +27,14 @@ func NewNatsDelivery(config configs.ServerConfig) (*NatsDelivery, error) {
 	}
 
 	return &NatsDelivery{
-		nc: nc,
+		nc:     nc,
+		grader: client,
 	}, nil
 }
 
 type NatsDelivery struct {
-	nc *nats.Conn
+	nc     *nats.Conn
+	grader IGraderClient
 }
 
 func (n *NatsDelivery) Publish(exercise exercise.Exercise) error {
@@ -69,6 +75,20 @@ func (n *NatsDelivery) StartWorkers(workers int) error {
 func (n *NatsDelivery) worker(ch <-chan *nats.Msg) {
 	for msg := range ch {
 		log.Info().Msgf("input: %s, %s", msg.Data, msg.Header)
+
+		ex := &exercise.Exercise{}
+		if err := json.Unmarshal(msg.Data, ex); err != nil {
+			log.Debug().Err(err).Msg("failed to unmarshal exercise")
+
+			continue
+		}
+
+		if err := n.grader.SendExercise(ex); err != nil {
+			log.Debug().Err(err).Msg("failed to send exercise")
+
+			continue
+		}
+
 		time.Sleep(time.Second * 10)
 	}
 }
