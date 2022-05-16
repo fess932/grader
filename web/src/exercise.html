@@ -6,16 +6,17 @@
     <link rel="stylesheet" href="/assets/main.css">
 </head>
 <body class="p-8 bg-gray-50">
-    <h1 class="text-2xl">Hello %username% !</h1>
+    <h1 class="text-2xl">Hello {{.Name}} !</h1>
 
     <div>
         <h2>Задача 1</h2>
         <h2>описание задачи</h2>
         <p>Вывести на экран числа от 1 до 100.</p>
-        <h2>Загрзить файлы</h2>
+        <h2>Загрузить файлы</h2>
 
-        <form class="flex flex-col gap-2 max-w-lg" method="post" action="/exercise/1/upload">
-            <input class="p-4" type="file" id="fileID" name="file" multiple>
+        <form class="flex flex-col gap-2 max-w-lg"
+              method="post" enctype="multipart/form-data" action="/exercise/1/upload">
+            <input class="p-4" type="file" id="fileID" name="exerciseFiles" multiple accept=".go" >
             <label class="p-4 bg-amber-200 cursor-pointer" for="fileID">Выберите файлы для загрузки</label>
             <button class="p-4 bg-amber-200">Загрузить</button>
         </form>
