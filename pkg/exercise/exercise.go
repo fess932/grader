@@ -1,16 +1,30 @@
 package exercise
 
-import "grader/pkg/user"
+import (
+	"grader/pkg/user"
+)
+
+// type Try struct {
+//	TryID  string `json:"tryID"`
+//	NumTry int    `json:"numTry"`
+//
+//	ID     string `json:"id"`
+//	UserID string `json:"userID"`
+//	Files  []File `json:"files"`
+// }
 
 type Exercise struct {
-	ID     string
-	UserID string
-	Files  []File
+	TryID  string `json:"tryID"`
+	NumTry int    `json:"numTry"`
+
+	ID     string `json:"id"`
+	UserID string `json:"userID"`
+	Files  []File `json:"files"`
 }
 
 type File struct {
-	Name string
-	Path string
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 type Publisher interface {
@@ -39,8 +53,7 @@ func (e *ExersiceUsecase) GetExercise(user user.User, id string) (Exercise, erro
 }
 
 func (e *ExersiceUsecase) CheckExercise(user user.User, exercise Exercise) error {
-	e.repo.Create(exercise)
-	e.publisher.Publish(exercise)
+	//e.repo.Create(exercise)
 
-	return nil
+	return e.publisher.Publish(exercise)
 }

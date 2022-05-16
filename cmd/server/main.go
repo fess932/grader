@@ -21,9 +21,14 @@ func main() {
 	}
 
 	config := configs.NewServerConfig()
+	log.Debug().Msgf("start nats: %v:%v", config.NatsHost, config.NatsPort)
 	queue.NewNatsQueue(config).Run()
 
-	edelivery := exerciseDelivery.NewNatsDelivery()
+	edelivery, err := exerciseDelivery.NewNatsDelivery(config)
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to create exercise delivery")
+	}
+
 	erepo := exercise.NewPostgresRepository(&sql.DB{})
 
 	exerUcase := exercise.NewExersiceUsecase(edelivery, erepo)
