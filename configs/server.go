@@ -5,14 +5,16 @@ type ServerConfig struct {
 	NatsPort int
 	Host     string
 
-	FilesDir string
+	QueueWorkers int
+	FilesDir     string
 }
 
 func NewServerConfig() ServerConfig {
 	return ServerConfig{
-		NatsHost: "localhost",
-		NatsPort: 4488,
-		Host:     ":8080",
-		FilesDir: "./files",
+		NatsHost:     "localhost",
+		NatsPort:     4488,
+		Host:         ":8080",
+		FilesDir:     "./files",
+		QueueWorkers: 10,
 	}
 }

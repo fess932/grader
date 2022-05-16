@@ -29,6 +29,10 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to create exercise delivery")
 	}
 
+	if err = edelivery.StartWorkers(config.QueueWorkers); err != nil {
+		log.Fatal().Err(err).Msg("failed to start exercise workers")
+	}
+
 	erepo := exercise.NewPostgresRepository(&sql.DB{})
 
 	exerUcase := exercise.NewExersiceUsecase(edelivery, erepo)

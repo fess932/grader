@@ -31,15 +31,44 @@ type NatsDelivery struct {
 	nc *nats.Conn
 }
 
-func (n NatsDelivery) Publish(exercise exercise.Exercise) error {
+func (n *NatsDelivery) Publish(exercise exercise.Exercise) error {
 	msg, err := json.Marshal(exercise)
 	if err != nil {
 		return fmt.Errorf("failed to marshal exercise: %w", err)
 	}
 
-	if err = n.nc.Publish("exercise", msg); err != nil {
-		return fmt.Errorf("failed to publish exercise: %w", err)
+	for i := 0; i < 30; i++ {
+		if err = n.nc.Publish("exercise", msg); err != nil {
+			return fmt.Errorf("failed to publish exercise: %w", err)
+		}
+
+		time.Sleep(time.Second)
 	}
 
 	return nil
+}
+
+func (n *NatsDelivery) StartWorkers(workers int) error {
+	log.Debug().Msg("Starting NATS workers")
+
+	const chsize = 64
+	ch := make(chan *nats.Msg, chsize)
+
+	_, err := n.nc.ChanSubscribe("exercise", ch)
+	if err != nil {
+		return fmt.Errorf("failed to subscribe to exercise channel: %w", err)
+	}
+
+	for ; workers > 0; workers-- {
+		go n.worker(ch)
+	}
+
+	return nil
+}
+
+func (n *NatsDelivery) worker(ch <-chan *nats.Msg) {
+	for msg := range ch {
+		log.Info().Msgf("input: %s, %s", msg.Data, msg.Header)
+		time.Sleep(time.Second * 10)
+	}
 }
