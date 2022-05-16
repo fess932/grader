@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option go_package = "pkg/gen/grader";
+
+message UploadRequest {
+    string mime = 1;
+    bytes chunk = 2;
+}
+
+message UploadResponse {
+  string name = 1;
+}
+
+service GraderService {
+  rpc Upload(stream UploadRequest) returns (UploadResponse) {};
+}
