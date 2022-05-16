@@ -1,10 +1,12 @@
 package main
 
 import (
+	"database/sql"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"grader/configs"
 	"grader/pkg/exercise"
+	exerciseDelivery "grader/pkg/exercise/delivery"
 	"grader/pkg/queue"
 	"grader/pkg/rest"
 	"os"
@@ -21,7 +23,10 @@ func main() {
 	config := configs.NewServerConfig()
 	queue.NewNatsQueue(config).Run()
 
-	exerUcase := exercise.NewExersiceUsecase()
+	edelivery := exerciseDelivery.NewNatsDelivery()
+	erepo := exercise.NewPostgresRepository(&sql.DB{})
+
+	exerUcase := exercise.NewExersiceUsecase(edelivery, erepo)
 
 	rest.NewRest(exerUcase, config).Serve() // blocking
 }
