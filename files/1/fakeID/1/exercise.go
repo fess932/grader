@@ -1,16 +1,30 @@
 package exercise
 
-import "grader/pkg/user"
+import (
+	"grader/pkg/user"
+)
+
+// type Try struct {
+//	TryID  string `json:"tryID"`
+//	NumTry int    `json:"numTry"`
+//
+//	ID     string `json:"id"`
+//	UserID string `json:"userID"`
+//	Files  []File `json:"files"`
+// }
 
 type Exercise struct {
-	ID     string
-	UserID string
-	Files  []File
+	TryID  string `json:"tryID"`
+	NumTry int    `json:"numTry"`
+
+	ID     string `json:"id"`
+	UserID string `json:"userID"`
+	Files  []File `json:"files"`
 }
 
 type File struct {
-	Name string
-	Path string
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 
 type Publisher interface {
