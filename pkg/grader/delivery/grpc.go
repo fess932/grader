@@ -6,6 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"grader/configs"
 	"grader/pkg/gen/grader"
+	"io"
 	"net"
 )
 
@@ -28,12 +29,17 @@ func (s *GraderService) Upload(server grader.GraderService_UploadServer) error {
 	log.Info().Msg("GraderService.Upload")
 	for {
 		req, err := server.Recv()
+		if err == io.EOF {
+			return nil
+		}
+
 		if err != nil {
 			log.Error().Err(err).Msg("GraderService.Upload.Recv")
 			return err
 		}
-		log.Info().Msgf("GraderService.Upload.Recv: %v", req)
-		//s.gu.Grade()
+
+		log.Info().Msgf("GraderService.Upload.Recv len: %v", len(req.Chunk))
+		s.gu.Grade()
 	}
 }
 
