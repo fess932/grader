@@ -1,0 +1,2 @@
+import one
+one.hello()

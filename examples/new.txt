@@ -1,0 +1,14 @@
+goos: linux
+goarch: amd64
+cpu: Intel(R) Xeon(R) CPU           X5675  @ 3.07GHz
+Benchmark_bool-12             	  506006	      2485 ns/op	     208 B/op	       1 allocs/op
+Benchmark_boolPointer-12      	  324985	      3434 ns/op	     992 B/op	       2 allocs/op
+Benchmark_string-12           	  414466	      3535 ns/op	    1888 B/op	       2 allocs/op
+Benchmark_stringPointer-12    	  414180	      3210 ns/op	     992 B/op	       2 allocs/op
+Benchmark_struct-12           	  305194	      4229 ns/op	    4192 B/op	       2 allocs/op
+Benchmark_structPointer-12    	  322711	      3466 ns/op	     992 B/op	       2 allocs/op
+Benchmark_map-12              	  414458	      3419 ns/op	     992 B/op	       2 allocs/op
+Benchmark_mapPointer-12       	  388720	      2702 ns/op	     992 B/op	       2 allocs/op
+Benchmark_interface-12        	  297627	      3675 ns/op	    1888 B/op	       2 allocs/op
+PASS
+ok  	command-line-arguments	14.289s
