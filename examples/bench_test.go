@@ -1,4 +1,4 @@
-package examples_test
+package task_test
 
 import "testing"
 

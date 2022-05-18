@@ -1,2 +1,0 @@
-import one
-one.hello()

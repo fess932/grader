@@ -1,8 +1,5 @@
-from task import one
+from task.main import hello
+import sys
 
-def main():
-    import task.one
-    print(task.one)
-    print("hello")
-
-main()
+num = input()
+sys.stdout.write(str(hello(num)))

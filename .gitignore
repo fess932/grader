@@ -11,6 +11,9 @@
 node_modules
 files
 
+.pytest_cache
+.vscode
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
