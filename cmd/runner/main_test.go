@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gopkg.in/yaml.v3"
 	"io"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -48,17 +47,14 @@ func Test(t *testing.T) {
 		t.Fatalf("failed to decode tests.yaml: %v", err)
 	}
 
-	log.Printf("Running [%+v]", exc)
-
-	t.Parallel()
-
 	switch exc.Lang {
 	case "go":
 		t.Log("Testing Go")
+		t.Log(exc.Lang, exc.Homedir)
+
 		Run(t, RunGo, exc.TestCases, exc.Homedir)
 	case "python":
 		t.Log("Testing Python")
-
 		t.Log(exc.Lang, exc.Homedir)
 
 		Run(t, RunPython, exc.TestCases, exc.Homedir)

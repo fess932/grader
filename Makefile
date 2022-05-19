@@ -13,5 +13,8 @@ gen:
 
 	protoc --go_out=. --go-grpc_out=. api/proto/grader.proto
 
+runner:
+	docker build -f ./Dockerfile.runner -t runner .
+
 static:
 	npm run build:css

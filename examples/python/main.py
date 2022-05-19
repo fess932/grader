@@ -1,4 +1,4 @@
-from task.main import hello
+from fib import hello
 import sys
 
 num = input()
