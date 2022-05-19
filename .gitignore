@@ -13,6 +13,7 @@ files
 
 .pytest_cache
 .vscode
+__pycache__
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
