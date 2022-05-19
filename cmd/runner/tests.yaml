@@ -1,0 +1,21 @@
+---
+id: 1
+
+#lang: python
+#homedir: ../../examples/python
+
+lang: go
+homdir: go/task
+
+tests:
+  - name: zero
+    input: "0"
+    expected: "0"
+
+  - name: one
+    input: "1"
+    expected: "1"
+
+  - name: "11"
+    input: "11"
+    expected: "88"

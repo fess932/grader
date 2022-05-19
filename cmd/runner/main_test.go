@@ -1,18 +1,21 @@
-package tests_test
+package runner_test
 
 import (
 	"bytes"
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"io"
+	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"testing"
 )
 
 type TC struct {
-	Name         string
-	InputData    string
-	ExpectedData string
+	Name         string `yaml:"name"`
+	InputData    string `yaml:"input"`
+	ExpectedData string `yaml:"expected"`
 
 	ActualData string
 }
@@ -26,60 +29,45 @@ func (tc TC) Equal() bool {
 }
 
 type Exercise struct {
-	ID        string
-	Lang      string
-	TestCases []TC
+	ID        string `yaml:"id"`
+	Lang      string `yaml:"lang"`
+	Homedir   string `yaml:"homedir"`
+	TestCases []TC   `yaml:"tests"`
 }
 
 func Test(t *testing.T) {
-	tcs := []TC{
-		{
-			Name:         "zero",
-			InputData:    "0",
-			ExpectedData: "0",
-		},
-		{
-			Name:         "one",
-			InputData:    "1",
-			ExpectedData: "1",
-		},
-		{
-			Name:         "11",
-			InputData:    "11",
-			ExpectedData: "89",
-		},
+	var exc Exercise
+
+	f, err := os.Open("tests.yaml")
+	if err != nil {
+
+		t.Fatalf("failed to open tests.yaml: %v", err)
 	}
 
-	exercises := []Exercise{
-		{
-			ID:        "1",
-			Lang:      "go",
-			TestCases: tcs,
-		},
-		{
-			ID:        "1",
-			Lang:      "python",
-			TestCases: tcs,
-		},
+	if err = yaml.NewDecoder(f).Decode(&exc); err != nil {
+		t.Fatalf("failed to decode tests.yaml: %v", err)
 	}
+
+	log.Printf("Running [%+v]", exc)
 
 	t.Parallel()
 
-	for _, exrc := range exercises {
-		switch exrc.Lang {
-		case "go":
-			t.Log("Testing Go")
-			Run(t, RunGo, exrc.TestCases)
-		case "python":
-			t.Log("Testing Python")
-			Run(t, RunPython, exrc.TestCases)
-		default:
-			t.Fatal("unknown language")
-		}
+	switch exc.Lang {
+	case "go":
+		t.Log("Testing Go")
+		Run(t, RunGo, exc.TestCases, exc.Homedir)
+	case "python":
+		t.Log("Testing Python")
+
+		t.Log(exc.Lang, exc.Homedir)
+
+		Run(t, RunPython, exc.TestCases, exc.Homedir)
+	default:
+		t.Fatal("unknown language")
 	}
 }
 
-func Run(t *testing.T, tFunc func(r io.Reader, w io.Writer) error, tcs []TC) {
+func Run(t *testing.T, tFunc func(r io.Reader, w io.Writer, homedir string) error, tcs []TC, homedir string) {
 	t.Helper()
 
 	var (
@@ -91,7 +79,7 @@ func Run(t *testing.T, tFunc func(r io.Reader, w io.Writer) error, tcs []TC) {
 	for _, v := range tcs {
 		t.Run(v.Name, func(t *testing.T) {
 			r = strings.NewReader(v.InputData)
-			err = tFunc(r, buf)
+			err = tFunc(r, buf, homedir)
 			v.ActualData = buf.String()
 			buf.Reset()
 
@@ -111,9 +99,9 @@ func Run(t *testing.T, tFunc func(r io.Reader, w io.Writer) error, tcs []TC) {
 	}
 }
 
-func RunGo(r io.Reader, w io.Writer) error {
+func RunGo(r io.Reader, w io.Writer, homedir string) error {
 	cmd := exec.Command("go", "run", ".")
-	cmd.Dir = "go/task"
+	cmd.Dir = homedir
 	cmd.Stdout = w
 	cmd.Stderr = w
 	cmd.Stdin = r
@@ -126,9 +114,9 @@ func RunGo(r io.Reader, w io.Writer) error {
 	return nil
 }
 
-func RunPython(r io.Reader, w io.Writer) error {
+func RunPython(r io.Reader, w io.Writer, homedir string) error {
 	cmd := exec.Command("python", "main.py")
-	cmd.Dir = "python"
+	cmd.Dir = homedir
 	cmd.Stdout = w
 	cmd.Stderr = w
 	cmd.Stdin = r
