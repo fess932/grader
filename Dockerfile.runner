@@ -12,6 +12,7 @@ ENV CGO_ENABLED=0
 
 ADD ./cmd/runner /tests
 WORKDIR /tests
+
 VOLUME /langs
 
 CMD ["go", "test", "-json", "./main_test.go"]

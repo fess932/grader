@@ -37,7 +37,7 @@ type Exercise struct {
 func Test(t *testing.T) {
 	var exc Exercise
 
-	f, err := os.Open("tests.yaml")
+	f, err := os.Open("/langs/tests.yaml")
 	if err != nil {
 
 		t.Fatalf("failed to open tests.yaml: %v", err)

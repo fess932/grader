@@ -16,5 +16,17 @@ gen:
 runner:
 	docker build -f ./Dockerfile.runner -t runner .
 
+run-go: runner
+	docker run \
+	-v $(shell pwd)/examples/go:/langs/go \
+	-v $(shell pwd)/examples/go.yaml:/langs/tests.yaml \
+	runner
+
+run-python: runner
+	docker run \
+	-v $(shell pwd)/examples/python:/langs/python \
+	-v $(shell pwd)/examples/python.yaml:/langs/tests.yaml \
+	runner
+
 static:
 	npm run build:css

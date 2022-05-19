@@ -1,11 +1,7 @@
 ---
 id: 1
-
-#lang: python
-#homedir: ../../examples/python
-
 lang: go
-homedir: ../../examples/go
+homedir: /langs/go
 
 tests:
   - name: zero
