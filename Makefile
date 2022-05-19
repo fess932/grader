@@ -1,4 +1,4 @@
-.PHONY: server static static-watch
+.PHONY: server static grader gen
 
 server: static
 	go run ./cmd/server
