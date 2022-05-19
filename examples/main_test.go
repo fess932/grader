@@ -3,7 +3,6 @@ package task_test
 import (
 	"bytes"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	"io"
 	"os/exec"
 	"strings"
@@ -69,8 +68,10 @@ func Test(t *testing.T) {
 	for _, exrc := range exercises {
 		switch exrc.Lang {
 		case "go":
+			t.Log("Testing Go")
 			Run(t, RunGo, exrc.TestCases)
 		case "python":
+			t.Log("Testing Python")
 			Run(t, RunPython, exrc.TestCases)
 		default:
 			t.Fatal("unknown language")
@@ -97,7 +98,6 @@ func Run(t *testing.T, tFunc func(r io.Reader, w io.Writer) error, tcs []TC) {
 			if err != nil {
 				t.Error(err)
 				t.Error(v.ActualData)
-				//t.Error(v)
 
 				return
 			}
@@ -112,14 +112,23 @@ func Run(t *testing.T, tFunc func(r io.Reader, w io.Writer) error, tcs []TC) {
 }
 
 func RunGo(r io.Reader, w io.Writer) error {
+	cmd := exec.Command("go", "run", ".")
+	cmd.Dir = "go/task"
+	cmd.Stdout = w
+	cmd.Stderr = w
+	cmd.Stdin = r
+
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("error: %w", err)
+	}
+
 	// 1/go
 	return nil
 }
 
 func RunPython(r io.Reader, w io.Writer) error {
-	log.Debug().Msg("run python")
-
-	cmd := exec.Command("python", "python/main.py")
+	cmd := exec.Command("python", "main.py")
+	cmd.Dir = "python"
 	cmd.Stdout = w
 	cmd.Stderr = w
 	cmd.Stdin = r
