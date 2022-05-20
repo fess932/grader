@@ -17,9 +17,18 @@ type Exercise struct {
 	TryID  string `json:"tryID"`
 	NumTry int    `json:"numTry"`
 
+	Lang string `json:"lang"`
+
 	ID     string `json:"id"`
 	UserID string `json:"userID"`
+	Tests  []TC   `json:"tests"`
 	Files  []File `json:"files"`
+}
+
+type TC struct {
+	Name     string `json:"name" yaml:"name"`
+	Input    string `json:"input" yaml:"input"`
+	Expected string `json:"expected" yaml:"expected"`
 }
 
 type File struct {

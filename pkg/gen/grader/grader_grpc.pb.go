@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GraderServiceClient interface {
 	Upload(ctx context.Context, opts ...grpc.CallOption) (GraderService_UploadClient, error)
+	Exercise(ctx context.Context, in *ExerciseRequest, opts ...grpc.CallOption) (*ExerciseResponse, error)
 }
 
 type graderServiceClient struct {
@@ -67,11 +68,21 @@ func (x *graderServiceUploadClient) CloseAndRecv() (*UploadResponse, error) {
 	return m, nil
 }
 
+func (c *graderServiceClient) Exercise(ctx context.Context, in *ExerciseRequest, opts ...grpc.CallOption) (*ExerciseResponse, error) {
+	out := new(ExerciseResponse)
+	err := c.cc.Invoke(ctx, "/GraderService/Exercise", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // GraderServiceServer is the server API for GraderService service.
 // All implementations must embed UnimplementedGraderServiceServer
 // for forward compatibility
 type GraderServiceServer interface {
 	Upload(GraderService_UploadServer) error
+	Exercise(context.Context, *ExerciseRequest) (*ExerciseResponse, error)
 	mustEmbedUnimplementedGraderServiceServer()
 }
 
@@ -81,6 +92,9 @@ type UnimplementedGraderServiceServer struct {
 
 func (UnimplementedGraderServiceServer) Upload(GraderService_UploadServer) error {
 	return status.Errorf(codes.Unimplemented, "method Upload not implemented")
+}
+func (UnimplementedGraderServiceServer) Exercise(context.Context, *ExerciseRequest) (*ExerciseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Exercise not implemented")
 }
 func (UnimplementedGraderServiceServer) mustEmbedUnimplementedGraderServiceServer() {}
 
@@ -121,13 +135,36 @@ func (x *graderServiceUploadServer) Recv() (*UploadRequest, error) {
 	return m, nil
 }
 
+func _GraderService_Exercise_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExerciseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GraderServiceServer).Exercise(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/GraderService/Exercise",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GraderServiceServer).Exercise(ctx, req.(*ExerciseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // GraderService_ServiceDesc is the grpc.ServiceDesc for GraderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GraderService_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "GraderService",
 	HandlerType: (*GraderServiceServer)(nil),
-	Methods:     []grpc.MethodDesc{},
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Exercise",
+			Handler:    _GraderService_Exercise_Handler,
+		},
+	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Upload",

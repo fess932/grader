@@ -3,14 +3,13 @@ module grader
 go 1.18
 
 require (
-	github.com/akyoto/cache v1.0.6
 	github.com/go-chi/chi/v5 v5.0.7
-	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/nats-io/nats-server/v2 v2.8.2
 	github.com/nats-io/nats.go v1.15.0
 	github.com/rs/zerolog v1.26.1
 	google.golang.org/grpc v1.46.2
 	google.golang.org/protobuf v1.27.1
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )
 
 require (

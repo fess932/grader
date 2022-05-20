@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/rs/zerolog/log"
@@ -42,6 +43,11 @@ func (s *GraderService) Upload(server grader.GraderService_UploadServer) error {
 		log.Info().Msgf("GraderService.Upload.Recv len: %v", len(req.Chunk))
 		s.gu.Grade()
 	}
+}
+
+func (s *GraderService) Exercise(context context.Context, r *grader.ExerciseRequest) (*grader.ExerciseResponse, error) {
+	log.Info().Msg("GraderService.Exercise")
+	return &grader.ExerciseResponse{}, nil
 }
 
 func (s *GraderService) Run() error {

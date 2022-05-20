@@ -7,11 +7,34 @@ message UploadRequest {
     string name = 2;
     bytes chunk = 3;
 }
-
 message UploadResponse {
   string name = 1;
 }
 
+/////////////
+message ExerciseRequest {
+  string lang = 1;
+  bytes tests = 2;
+  repeated UserFile files = 3;
+}
+
+message UserFile {
+  string name = 1;
+  bytes content = 2;
+}
+
+message ExerciseResponse {
+  repeated Test test = 1;
+}
+
+message Test {
+  string name = 1;
+  string input = 2;
+  string expected = 3;
+}
+
 service GraderService {
   rpc Upload(stream UploadRequest) returns (UploadResponse) {};
+
+  rpc Exercise(ExerciseRequest) returns (ExerciseResponse) {};
 }
