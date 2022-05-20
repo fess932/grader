@@ -1,6 +1,7 @@
 package delivery
 
 import (
+	"errors"
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
@@ -29,7 +30,7 @@ func (s *GraderService) Upload(server grader.GraderService_UploadServer) error {
 	log.Info().Msg("GraderService.Upload")
 	for {
 		req, err := server.Recv()
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			return nil
 		}
 

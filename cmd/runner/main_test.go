@@ -3,6 +3,7 @@ package runner_test
 import (
 	"bytes"
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 	"io"
 	"os"
@@ -49,14 +50,8 @@ func Test(t *testing.T) {
 
 	switch exc.Lang {
 	case "go":
-		t.Log("Testing Go")
-		t.Log(exc.Lang, exc.Homedir)
-
 		Run(t, RunGo, exc.TestCases, exc.Homedir)
 	case "python":
-		t.Log("Testing Python")
-		t.Log(exc.Lang, exc.Homedir)
-
 		Run(t, RunPython, exc.TestCases, exc.Homedir)
 	default:
 		t.Fatal("unknown language")
@@ -79,18 +74,8 @@ func Run(t *testing.T, tFunc func(r io.Reader, w io.Writer, homedir string) erro
 			v.ActualData = buf.String()
 			buf.Reset()
 
-			if err != nil {
-				t.Error(err)
-				t.Error(v.ActualData)
-
-				return
-			}
-
-			if !v.Equal() {
-				t.Error(v)
-
-				return
-			}
+			require.NoErrorf(t, err, "failed to run test case: %v", v)
+			require.True(t, v.Equal(), "test case %v failed: %v", v.Name, v)
 		})
 	}
 }

@@ -13,6 +13,8 @@ import (
 	"os"
 )
 
+const chunkSize = 1024 * 64 // 64KB optimal chunk size for streaming binary data
+
 func NewGraderClient(addr string) (*GraderClient, error) {
 	log.Debug().Msg("Creating new grpc client")
 
@@ -38,8 +40,7 @@ func (g GraderClient) SendExercise(exercise *exercise.Exercise) error {
 		filePath = exercise.Files[0].Path
 		file     *os.File
 
-		// Maximum 1KB size per stream.
-		buf = make([]byte, 1024)
+		buf = make([]byte, chunkSize)
 		num int
 	)
 
